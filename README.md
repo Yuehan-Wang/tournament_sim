@@ -1,3 +1,6 @@
+Sample Output for FIFA 2026 World Cup Simulation:
+
+```text
 [Group A] Italy 3 - 0 Japan → Italy wins
 [Group A] Italy 3 - 3 Paraguay → Draw
 [Group A] Italy 2 - 1 Romania → Italy wins
@@ -255,3 +258,4 @@ Final Rankings (by elimination round):
 17th-32nd  Wales                Elo: 1737
 
 Champion: Germany
+```
