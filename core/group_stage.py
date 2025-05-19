@@ -11,20 +11,15 @@ class GroupStage:
 
     def _create_groups(self):
         sorted_teams = sorted(self.teams, key=lambda t: t.rating, reverse=True)
-        
         pots = [sorted_teams[i*12 : (i+1)*12] for i in range(4)]
-        
         for pot in pots:
-            random.shuffle(pot) 
-
+            random.shuffle(pot)
         groups = {chr(ord('A') + i): [] for i in range(12)}
-        
         for group_idx in range(12):
             group_name = chr(ord('A') + group_idx)
             for pot in pots:
                 selected_team = pot[group_idx]
                 groups[group_name].append(selected_team)
-        
         return groups
 
     def simulate(self):

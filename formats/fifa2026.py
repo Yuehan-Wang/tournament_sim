@@ -7,13 +7,10 @@ class FIFA2026Tournament:
         self.group_stage = None
         self.knockout_stage = None
         self.qualified_teams = []
-
     def run(self):
         self.group_stage = FIFA2026GroupStage(self.teams, self.match_engine)
         self.group_stage.simulate()
         self.group_stage.display_tables()
-
         self.qualified_teams = self.group_stage.get_qualified_teams()
-
     def get_qualified_teams(self):
         return self.qualified_teams
