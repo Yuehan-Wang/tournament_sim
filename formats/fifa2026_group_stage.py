@@ -5,10 +5,12 @@ class FIFA2026GroupStage(GroupStageBase):
     def __init__(self, teams, match_engine):
         self.stage = GroupStage(teams, match_engine, group_size=4)
         self.rankings = {}
+        self.results = {}
 
     def simulate(self):
         self.stage.simulate()
         self.rankings = self.stage.get_group_rankings()
+        self.results = self.stage.results
 
     def get_rankings(self):
         return self.rankings

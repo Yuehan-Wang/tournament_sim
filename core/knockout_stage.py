@@ -1,72 +1,112 @@
-import random
-
 class KnockoutStage:
     def __init__(self, teams, match_engine):
-        assert len(teams) in [16, 32]
+        if len(teams) not in (16, 32):
+            raise ValueError("KnockoutStage expects 16 or 32 teams")
         self.teams = teams
         self.match_engine = match_engine
-        self.rounds = []
+        self.rounds: list[list[tuple]] = []
+        self.eliminated: dict = {}
         self.winner = None
-        self.eliminated = {}
+        self.runner_up = None
+    def _build_fifa2026_round_of_32(self):
+        winners = {t.group: t for t in self.teams if t.group_pos == 1}
+        runners = {t.group: t for t in self.teams if t.group_pos == 2}
+        thirds  = [t for t in self.teams if t.group_pos == 3]
+        def pick_third(allowed):
+            for i, tm in enumerate(thirds):
+                if tm.group in allowed:
+                    return thirds.pop(i)
+            return thirds.pop(0)
+        matches = [
+            (runners["A"], runners["B"]),
+            (winners["E"], pick_third({"A","B","C","D","F"})),
+            (winners["F"], runners["C"]),
+            (winners["C"], runners["F"]),
+            (winners["I"], pick_third({"C","D","F","G","H"})),
+            (runners["E"], runners["I"]),
+            (winners["A"], pick_third({"C","E","F","H","I"})),
+            (winners["L"], pick_third({"E","H","I","J","K"})),
+            (winners["D"], pick_third({"B","E","F","I","J"})),
+            (winners["G"], pick_third({"A","E","H","I","J"})),
+            (runners["K"], runners["L"]),
+            (winners["H"], runners["J"]),
+            (winners["B"], pick_third({"E","F","G","I","J"})),
+            (winners["J"], runners["H"]),
+            (winners["K"], pick_third({"D","E","I","J","L"})),
+            (runners["D"], runners["G"]),
+        ]
+        return [tm for pair in matches for tm in pair]
+
+    def _print_match(self, t1, t2, score, winner, pens):
+        pen_flag = " (p)" if pens else ""
+        print(f"{t1.name} {score[0]}–{score[1]} {t2.name} → {winner.name}{pen_flag}")
 
     def simulate(self):
-        current_round = self.teams[:]
-        round_num = 1
-        round_size = len(current_round)
-        while len(current_round) > 1:
-            random.shuffle(current_round)
-            next_round = []
-            matches = []
-            print(f"\nRound of {round_size}")
-            for i in range(0, len(current_round), 2):
-                team1, team2 = current_round[i], current_round[i+1]
-                winner, score, via_penalty = self.match_engine.simulate_match(team1, team2, is_knockout=True)
-                loser = team2 if winner == team1 else team1
-                self.eliminated[loser] = round_size
-                matches.append((team1, team2, score, winner, via_penalty))
-                next_round.append(winner)
-                if via_penalty:
-                    print(f"{team1.name} {score[0]} - {score[1]} {team2.name} -> {winner.name} wins on penalties")
-                else:
-                    print(f"{team1.name} {score[0]} - {score[1]} {team2.name} -> {winner.name} wins")
-            self.rounds.append(matches)
-            current_round = next_round
-            round_size = len(current_round)
-            round_num += 1
-        self.winner = current_round[0]
-        print(f"\nChampion: {self.winner.name}")
+        if len(self.teams) == 32:
+            current = self._build_fifa2026_round_of_32()
+        else: 
+            current = sorted(self.teams, key=lambda t: (t.group, t.group_pos))
+
+        size = len(current)
+        while size > 1:
+            print(f"\nRound of {size}")
+            winners_next: list = []
+            matches_this_round: list = []
+
+            for i in range(0, size, 2):
+                t1, t2 = current[i], current[i + 1]
+
+                winner, score, pens = self.match_engine.simulate_match(
+                    t1, t2, is_knockout=True
+                )
+
+                t1.record_match(score[0], score[1])
+                t2.record_match(score[1], score[0])
+
+                loser = t2 if winner is t1 else t1
+                self.eliminated[loser] = size
+                winners_next.append(winner)
+
+                matches_this_round.append((t1, t2, score, winner, pens))
+                self._print_match(t1, t2, score, winner, pens)
+
+            self.rounds.append(matches_this_round)
+            current = winners_next
+            size //= 2
+
+        self.winner = current[0]
+        self.eliminated[self.winner] = 1
+        if self.rounds and self.rounds[-1]:
+            t1, t2, *_ = self.rounds[-1][0]
+            self.runner_up = t2 if self.winner is t1 else t1
 
     def get_champion(self):
         return self.winner
 
+    def _rank_key(self, team):
+        elim_round = self.eliminated.get(team, 99)
+        return (elim_round, -team.goal_difference(), -team.rating)
+
+    def get_rankings(self):
+        return sorted(self.teams, key=self._rank_key)
+
     def display_rankings(self):
-        print("\nFinal Rankings (by elimination round):")
-        ranks = {1: [self.winner]}
-        final_round = self.rounds[-1]
-        last_match = final_round[0]
-        runner_up = last_match[0] if last_match[0] != self.winner else last_match[1]
-        ranks[2] = [runner_up]
-        semi_final_round = self.rounds[-2]
-        third_place = []
-        for match in semi_final_round:
-            if match[3] != self.winner and match[3] != runner_up:
-                third_place.append(match[3])
-        buckets = {
-            4: [],
-            8: [],
-            16: [],
-            32: []
-        }
-        for team, round_out in self.eliminated.items():
-            if round_out in buckets:
-                buckets[round_out].append(team)
-        def print_rank(range_str, teams):
-            for t in sorted(teams, key=lambda x: (-x.points, -x.goal_difference(), -x.goals_for)):
-                print(f"{range_str:10} {t.name:20} Elo: {t.rating}")
-        print_rank("1st", ranks[1])
-        print_rank("2nd", ranks[2])
-        print_rank("3rd", third_place)
-        print_rank("4th", buckets[4])
-        print_rank("5th-8th", buckets[8])
-        print_rank("9th-16th", buckets[16])
-        print_rank("17th-32nd", buckets[32])
+        if self.winner is None:
+            print("Knock‑out stage not yet simulated.")
+            return
+
+        print("\n=== FINAL RANKINGS ===")
+        print(f"1. {self.winner.name}  (Champion)")
+        if self.runner_up:
+            print(f"2. {self.runner_up.name}  (Runner‑up)")
+
+        tiers = [
+            (4,  "Semi‑finalists  (3‑4)"),
+            (8,  "Quarter‑finalists (5‑8)"),
+            (16, "Round‑of‑16      (9‑16)"),
+            (32, "Round‑of‑32     (17‑32)"),
+        ]
+        for size, label in tiers:
+            group = [t.name for t, rnd in self.eliminated.items() if rnd == size]
+            if group:
+                print(f"{label:<22}: {', '.join(sorted(group))}")
