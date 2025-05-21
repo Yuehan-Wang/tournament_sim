@@ -26,7 +26,7 @@ python -m venv venv && source venv/bin/activate      # optional
 pip install -r requirements.txt
 ```
 
-All dependencies are pure-Python (`pandas`, `numpy`, `matplotlib`).
+All dependencies are pure-Python (`pandas`, `numpy`, `matplotlib`, `tqdm`).
 
 ---
 
@@ -38,11 +38,14 @@ formats/         real-world presets (fifa2026, playoff, swiss)
 evaluators/      post-hoc metrics (elo_correlation, incentive_compatibility)
 data/teams.csv   48-team Elo table (FiveThirtyEight, Nov-2025 snapshot)
 main.py          one-click driver → summary CSV + PNG plots
+batch_sims.py    multi-run Monte Carlo experiment (1000× per format)
 ```
 
 ---
 
 ## 3. Running a full experiment
+
+### Run a single tournament of each type:
 
 ```bash
 python main.py
@@ -71,6 +74,31 @@ Low-incentive games: 0/31 (0.0 %)
 Correlation: 0.904 | Avg pos diff: 2.48
 Low-incentive games: 0/192 (0.0 %)
 ```
+
+### Run Monte Carlo simulations:
+
+```bash
+python batch_sims.py --rating_csv data/teams.csv --n 1000
+```
+
+This will run 1000 independent tournaments for each format, and output:
+
+- `results/batch_metrics.csv`: raw output table (3,000 rows)  
+- Console summary: mean ± SD of Spearman ρ, avg position error, and dead-rubber %
+
+Example summary:
+
+```
+=== Monte-Carlo summary (mean ± SD) ===
+
+| Format    | rho mean | rho std | err mean | err std | dead_pct mean | dead_pct std |
+|-----------|----------|---------|----------|---------|----------------|----------------|
+| FIFA2026  |  0.695   | 0.103   |   5.34   |  0.91   |    10.8        |     2.2       |
+| Playoff   |  0.414   | 0.008   |   8.11   |  0.09   |     0.0        |     0.0       |
+| Swiss8R   |  0.558   | 0.077   |  10.25   |  1.08   |     0.0        |     0.0       |
+```
+
+You can see the full paper [here](https://github.com/Yuehan-Wang/tournament_sim/tree/main).
 
 ---
 
