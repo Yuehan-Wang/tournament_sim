@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-# ─── project imports ──────────────────────────────────────────────────────────
 from formats.fifa2026 import FIFA2026Tournament
 from formats.playoff   import PlayoffTournament
 from formats.swiss     import SwissTournament
