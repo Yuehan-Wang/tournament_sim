@@ -1,18 +1,17 @@
-
-# Tournament Sim
+# Tournament Simulation
 
 A small, self-contained framework for stress-testing football tournament designs.  
-The current release reproduces the three formats analysed in our paper:
+The current release reproduces the three formats analyzed in our paper:
 
-| Format                             | Code class                              | Matches | Notes                      |
-|------------------------------------|------------------------------------------|---------|----------------------------|
+| Format                                 | Code class                            | Matches | Notes                        |
+| -------------------------------------- | ------------------------------------- | ------- | ---------------------------- |
 | 12 × 4 groups → 32-team KO (FIFA 2026) | `formats.fifa2026.FIFA2026Tournament` | 104     | Official World-Cup structure |
-| 32-team single-elimination         | `formats.playoff.PlayoffTournament`      | 31      | “Pure play-off” baseline   |
-| 8-round Swiss league               | `formats.swiss.SwissTournament`          | 192     | No knock-out phase         |
+| 32-team single-elimination             | `formats.playoff.PlayoffTournament`   | 31      | “Pure play-off” baseline     |
+| 8-round Swiss league                   | `formats.swiss.SwissTournament`       | 192     | No knock-out phase           |
 
 The simulator tracks two headline metrics:
 
-- **Elo–finish correlation** (Spearman ρ, plus avg / max position error)  
+- **Elo–finish correlation** (Spearman ρ, plus average / maximum position error)
 - **Low-incentive fixtures** — group games where both sides are already safe or already eliminated before kick-off
 
 ---
@@ -22,7 +21,7 @@ The simulator tracks two headline metrics:
 ```bash
 git clone https://github.com/Yuehan-Wang/tournament_sim.git
 cd tournament_sim
-python -m venv venv && source venv/bin/activate      # optional
+python -m venv venv && source venv/bin/activate # optional
 pip install -r requirements.txt
 ```
 
@@ -78,12 +77,12 @@ Low-incentive games: 0/192 (0.0 %)
 ### Run Monte Carlo simulations:
 
 ```bash
-python batch_sims.py --rating_csv data/teams.csv --n 1000
+python batch_sim.py --rating_csv data/teams.csv --n 1000
 ```
 
 This will run 1000 independent tournaments for each format, and output:
 
-- `results/batch_metrics.csv`: raw output table (3,000 rows)  
+- `results/batch_metrics.csv`: raw output table (3,000 rows)
 - Console summary: mean ± SD of Spearman ρ, avg position error, and dead-rubber %
 
 Example summary:
@@ -105,11 +104,14 @@ You can see the full paper [here](https://github.com/Yuehan-Wang/tournament_sim/
 ## 4. Extending
 
 ### Add a format
+
 Create `formats/my_format.py`, subclassing `core.GroupStage`,  
 `core.KnockoutStage`, or rolling your own `run()` / `get_rankings()`.
 
 ### Add a metric
-Drop an evaluator in `evaluators/` that exposes:  
+
+Drop an evaluator in `evaluators/` that exposes:
+
 ```python
 evaluate(tournament_or_df) -> dict
 ```
@@ -119,7 +121,7 @@ or integrate it with Jupyter for deeper plots.
 
 ---
 
-## 5. Licence
+## 5. License
 
-MIT Licence © 2025 Yuehan Wang  
+MIT License © 2025 Yuehan Wang & Annabelle Huang
 Real-world Elo data © FiveThirtyEight.

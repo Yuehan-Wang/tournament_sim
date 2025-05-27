@@ -8,14 +8,7 @@ class GroupStage:
     """
 
     def __init__(self, teams, match_engine, group_size: int = 4):
-        """
-        Initialize the group stage.
-
-        Args:
-            teams: List of team objects participating in the group stage.
-            match_engine: Object responsible for simulating matches between teams.
-            group_size: Number of teams in each group (default 4).
-        """
+        """ Initialize the group stage. """
         self.teams = teams
         self.match_engine = match_engine
         self.group_size = group_size
@@ -37,9 +30,6 @@ class GroupStage:
             - Split teams into 4 pots of 12 teams each (top 12 rated in pot 1, next 12 in pot 2, etc.)
             - Shuffle each pot to randomize draw.
             - Assign one team from each pot to each group, ensuring balanced groups.
-
-        Returns:
-            dict: Groups labeled 'A' through 'L', each with 4 teams.
         """
         sorted_teams = sorted(self.teams, key = lambda t: t.rating, reverse = True)
 
@@ -102,19 +92,7 @@ class GroupStage:
     # ----------------------------------------------------------
 
     def get_group_rankings(self):
-        """
-        Compute and return rankings of teams within each group.
-
-        Ranking criteria applied in order (like FIFA rules):
-            - Points (higher better)
-            - Goal difference (higher better)
-            - Goals scored (higher better)
-            - Fair-play points (fewer card points better, so reversed sign)
-            - Drawing of lots (random tie-break)
-
-        Returns:
-            dict: Dictionary with group letters as keys, and lists of teams ranked from 1st to last as values.
-        """
+        """ Compute and return rankings of teams within each group. """
         ranks = {}
 
         for g, teams in self.groups.items():
@@ -133,11 +111,7 @@ class GroupStage:
         return ranks
 
     def display_tables(self):
-        """
-        Print the current standings tables for all groups.
-
-        Displays team name, points, goal difference, goals for, and fair-play points.
-        """
+        """ Print the current standings tables for all groups. """
         for g, table in self.get_group_rankings().items():
             print(f"\nGroup {g}")
             for t in table: print(f"{t.name:15} | Pts {t.points:2} | GD {t.goal_difference():+2} | GF {t.goals_for:2} | FP {t.fair_play}")

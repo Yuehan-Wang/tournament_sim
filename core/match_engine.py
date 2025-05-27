@@ -8,12 +8,7 @@ class MatchEngine:
     """
 
     def __init__(self, base_goal_expectation: float = 1.1):
-        """
-        Initialize the match engine.
-
-        Args:
-            base_goal_expectation: Average goal rate for balanced teams.
-        """
+        """ Initialize the match engine. """
         self.base_goal_expectation = base_goal_expectation
 
     # ----------------------------------------------------------
@@ -21,17 +16,11 @@ class MatchEngine:
     # ----------------------------------------------------------
 
     def _elo_win_probability(self, rating1, rating2):
-        """
-        Return win probability for rating1 vs rating2.
-
-        Uses simplified fixed outcomes for demonstration purposes.
-        """
+        """ Return win probability for rating1 vs rating2. """
         return 0.90 if rating1 > rating2 else 0.05
 
     def _draw_probability(self, rating1, rating2):
-        """
-        Return probability of draw for rating1 vs rating2.
-        """
+        """ Return probability of draw for rating1 vs rating2. """
         return 0.05
 
     # ----------------------------------------------------------
@@ -39,18 +28,10 @@ class MatchEngine:
     # ----------------------------------------------------------
 
     def _expected_goals(self, rating1, rating2):
-        """
-        Convert Elo ratings to goal expectations (Poisson means).
-
-        Process:
-            - Use rating gap to compute attacking strength ratio.
-            - Adjust goal expectation up or down accordingly.
-
-        Returns:
-            tuple: (mean goals for team1, mean goals for team2)
-        """
+        """ Convert Elo ratings to goal expectations (Poisson means). """
         elo_diff = rating1 - rating2
         factor = 1 + elo_diff / 1200 # 600-point gap → factor = 1.5
+
         g1 = max(0.2, self.base_goal_expectation * factor)
         g2 = max(0.2, self.base_goal_expectation / factor)
         return g1, g2
@@ -58,12 +39,7 @@ class MatchEngine:
     # ----------------------------------------------------------
 
     def _simulate_penalty(self, rating1, rating2):
-        """
-        Simulate penalty shootout based on ratings.
-
-        Returns:
-            bool: True if team1 wins, False otherwise.
-        """
+        """ Simulate penalty shootout based on ratings. """
         return random.random() < self._elo_win_probability(rating1, rating2)
 
     # ----------------------------------------------------------
@@ -78,13 +54,6 @@ class MatchEngine:
             - For knockouts:
                 - Add extra time if draw.
                 - Use penalty shootout if still level.
-
-        Args:
-            team1, team2: Competing team objects.
-            is_knockout: Whether penalties are allowed.
-
-        Returns:
-            tuple: (winner, (score1, score2), went_to_penalties)
         """
         r1, r2 = team1.rating, team2.rating
 

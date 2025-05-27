@@ -5,14 +5,9 @@ class KnockoutStage:
     """
 
     def __init__(self, teams, match_engine):
-        """
-        Initialize the knockout stage.
-
-        Args:
-            teams (list): List of qualified teams (must be 16 or 32).
-            match_engine: Match simulation engine used for games.
-        """
+        """ Initialize the knockout stage. """
         if len(teams) not in (16, 32): raise ValueError("KnockoutStage expects 16 or 32 teams")
+
         self.teams = teams
         self.match_engine = match_engine
 
@@ -36,9 +31,6 @@ class KnockoutStage:
             - Group winners (1st place) and runners-up (2nd place) auto-qualify.
             - Remaining slots filled by best-performing 3rd-place teams.
             - Matches are hard-coded to mirror FIFA's planned bracket structure.
-
-        Returns:
-            list: Ordered list of teams in round-of-32 matchups.
         """
         winners = {t.group: t for t in self.teams if t.group_pos == 1}
         runners = {t.group: t for t in self.teams if t.group_pos == 2}
@@ -75,9 +67,7 @@ class KnockoutStage:
         return [tm for pair in matches for tm in pair]
 
     def _print_match(self, t1, t2, score, winner, pens):
-        """
-        Print formatted match result (with penalty note if needed).
-        """
+        """ Print formatted match result (with penalty note if needed). """
         pen_flag = " (p)" if pens else ""
         print(f"{t1.name} {score[0]}-{score[1]} {t2.name} → {winner.name}{pen_flag}")
 
@@ -140,38 +130,20 @@ class KnockoutStage:
     # ----------------------------------------------------------
 
     def get_champion(self):
-        """
-        Return the tournament winner.
-        """
+        """ Return the tournament winner. """
         return self.winner
 
     def _rank_key(self, team):
-        """
-        Key for final ranking.
-
-        Order:
-            - Round of elimination (lower better)
-            - Goal difference (higher better)
-            - Team rating (higher better)
-
-        Returns:
-            tuple: Sorting key for ranking teams.
-        """
+        """ Key for final ranking. """
         elim_round = self.eliminated.get(team, 99)
         return (elim_round, -team.goal_difference(), -team.rating)
 
     def get_rankings(self):
-        """
-        Return all teams ranked by final position.
-        """
+        """ Return all teams ranked by final position. """
         return sorted(self.teams, key = self._rank_key)
 
     def display_rankings(self):
-        """
-        Print final rankings summary.
-
-        Shows champion, runner-up, and teams by round exit.
-        """
+        """ Print final rankings summary. """
         if self.winner is None:
             print("Knock-out stage not yet simulated.")
             return

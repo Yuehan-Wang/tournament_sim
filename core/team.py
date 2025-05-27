@@ -7,21 +7,13 @@ class Team:
     """
 
     def __init__(self, name: str, rating: float):
-        """
-        Initialize a team.
-
-        Args:
-            name: Team name.
-            rating: Elo rating used for simulation.
-        """
+        """ Initialize a team. """
         self.name = name
         self.rating = rating
         self.reset_stats()
 
     def reset_stats(self):
-        """
-        Reset all match and group-related statistics.
-        """
+        """ Reset all match and group-related statistics. """
         self.points = 0
         self.wins = 0
         self.draws = 0
@@ -35,18 +27,7 @@ class Team:
     # ----------------------------------------------------------
 
     def record_match(self, goals_for: int, goals_against: int):
-        """
-        Record the outcome of a match.
-
-        Updates:
-            - Points (3 win, 1 draw, 0 loss)
-            - Goals scored and conceded
-            - Fair-play points (randomly generated cards)
-
-        Args:
-            goals_for: Goals scored by this team.
-            goals_against: Goals conceded.
-        """
+        """ Record the outcome of a match. """
         self.goals_for += goals_for
         self.goals_against += goals_against
 
@@ -67,21 +48,13 @@ class Team:
     # ----------------------------------------------------------
 
     def goal_difference(self):
-        """
-        Return goal difference (goals scored - conceded).
-        """
+        """ Return goal difference (goals scored - conceded). """
         return self.goals_for - self.goals_against
 
     def stats_summary(self):
-        """
-        Return string summary of team stats.
-
-        Format: name, points, goal diff, goals for, fair play.
-        """
+        """ Return summary of team stats. """
         return f"{self.name}: {self.points} pts | GD {self.goal_difference():+2} | GF {self.goals_for:2} | FP {self.fair_play}"
 
     def __repr__(self):
-        """
-        User-friendly representation of the team.
-        """
+        """ Return representation of the team. """
         return f"{self.name} ({self.rating})"
