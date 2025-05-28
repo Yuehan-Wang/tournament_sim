@@ -74,18 +74,18 @@ class EloCorrelationEvaluator:
 
             # Scatter plot: Elo vs final position
             plt.figure(figsize = (10,7))
-            plt.scatter(merged_data['elo'], merged_data['position'], s = 30)
+            plt.scatter(merged_data['elo_rank'], merged_data['position'], s = 30)
 
             # Annotate each team
-            for _, row in merged_data.iterrows(): plt.annotate(row['team'], (row['elo'], row['position']), xytext = (5, 5), textcoords = 'offset points')
+            for _, row in merged_data.iterrows(): plt.annotate(row['team'], (row['elo_rank'], row['position']), xytext = (5, 5), textcoords = 'offset points')
 
             # Add linear trend line
-            z = np.polyfit(merged_data['elo'], merged_data['position'], 1)
+            z = np.polyfit(merged_data['elo_rank'], merged_data['position'], 1)
             p = np.poly1d(z)
-            plt.plot(merged_data['elo'], p(merged_data['elo']), "r--")
+            plt.plot(merged_data['elo_rank'], p(merged_data['elo_rank']), "r--")
 
             # Show correlation on plot
-            correlation = stats.spearmanr(merged_data['position'], merged_data['elo'])[0]
+            correlation = stats.spearmanr(merged_data['position'], merged_data['elo_rank'])[0]
             plt.annotate(f'Correlation: {correlation:.3f}', xy = (0.025, 0.950), xycoords = 'axes fraction', fontsize = 12)
 
             # Final plot formatting
@@ -93,10 +93,9 @@ class EloCorrelationEvaluator:
             plt.xlabel('Initial ELO', fontsize = 12)
             plt.ylabel('Final Position', fontsize = 12)
 
-            elo_min = merged_data['elo'].min()
-            elo_max = merged_data['elo'].max()
-            plt.xticks(np.arange(int(elo_min // 50 * 50), int(elo_max // 50 * 50) + 51, 50))
-            plt.gca().invert_xaxis()
+            elo_min = merged_data['elo_rank'].min()
+            elo_max = merged_data['elo_rank'].max()
+            plt.xticks(np.arange(0, elo_max + 2))
 
             pos_min = merged_data['position'].min()
             pos_max = merged_data['position'].max()

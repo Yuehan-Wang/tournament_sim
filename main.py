@@ -91,7 +91,7 @@ def main():
     # Pure Playoff Format
     po_tournament = PlayoffTournament(load_teams_from_csv(), MatchEngine())
     po_tournament.run()
-    compute_metrics("Pure Play-off", po_tournament.get_rankings(), po_tournament, initial_elos, corr_eval, ic_eval)
+    compute_metrics("Pure Playoff", po_tournament.get_rankings(), po_tournament, initial_elos, corr_eval, ic_eval)
 
     # Swiss Format (8 rounds)
     swiss_tournament = SwissTournament(load_teams_from_csv(), MatchEngine(), rounds = 8)
