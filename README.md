@@ -12,7 +12,7 @@ The current release reproduces the three formats analyzed in our paper:
 The simulator tracks two headline metrics:
 
 - **Elo–finish correlation** (Spearman ρ, plus average / maximum position error)
-- **Low-incentive fixtures** — group games where both sides are already safe or already eliminated before kick-off
+- **Low-incentive fixtures** — group games where both sides are already safe or already eliminated before kickoff
 
 ---
 
@@ -62,15 +62,15 @@ Example console output:
 
 ```
 [FIFA 2026]
-Correlation: 0.828 | Avg pos diff: 3.94
-Low-incentive games: 12/72 (16.7 %)
+Correlation: 0.756  |  Avg pos diff: 3.68
+Low-incentive games: 9/72 (12.5 %)
 
-[Pure Play-off]
-Correlation: 0.610 | Avg pos diff: 6.77
+[Pure Playoff]
+Correlation: 0.398  |  Avg pos diff: 8.38
 Low-incentive games: 0/31 (0.0 %)
 
-[8-round Swiss]
-Correlation: 0.904 | Avg pos diff: 2.48
+[8-Round Swiss]
+Correlation: 0.522  |  Avg pos diff: 10.79
 Low-incentive games: 0/192 (0.0 %)
 ```
 

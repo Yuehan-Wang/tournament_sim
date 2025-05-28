@@ -96,7 +96,7 @@ def main():
     # Swiss Format (8 rounds)
     swiss_tournament = SwissTournament(load_teams_from_csv(), MatchEngine(), rounds = 8)
     swiss_tournament.run()
-    compute_metrics("8-round Swiss", swiss_tournament.get_rankings(), swiss_tournament, initial_elos, corr_eval, ic_eval)
+    compute_metrics("8-Round Swiss", swiss_tournament.get_rankings(), swiss_tournament, initial_elos, corr_eval, ic_eval)
 
 if __name__ == "__main__":
     main()
